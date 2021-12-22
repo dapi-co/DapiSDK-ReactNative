@@ -12,7 +12,7 @@ The SDK provides direct access to Dapi endpoints and offers optional UI to manag
 
 ## Integration
 
-You can check out our [React-Native Integration Guide](https://dapi-api.readme.io/docs/how-to-integrate-with-react-native-sdk) for detailed information about our SDK.
+You can check out our [React-Native Integration Guide](https://dapi-api.readme.io/docs/how-to-integrate-with-reactnative-sdk) for detailed information about our SDK.
 
 ## Run The Example App
 
