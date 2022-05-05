@@ -1192,6 +1192,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
 
+"@react-native-picker/picker@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.4.1.tgz#92feb7e0672d739624517dae04bf4de1452dfcdc"
+  integrity sha512-1XWy3IQgwr7MWd30KdY1iUh2gQZD+JiotN1ifj/ptFUYKon/0UFwngKQaWCO/CP/FdLl20/huSSLwKedYrdMMA==
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
@@ -2297,10 +2302,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-connect-react-native@^2.28.0:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/connect-react-native/-/connect-react-native-2.28.0.tgz#1be59fa90b37f8b050763bc7b5bd4419eab31c1a"
-  integrity sha512-+RTFTgx4nl03TBenSNe63/AmwuUdOFRZYPZybpYHAU/5C1bPD6XDBQBYZ2jyqWkw5XNFwoTKsj51Xjxr59/TDA==
+connect-react-native@^2.32.0:
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/connect-react-native/-/connect-react-native-2.32.0.tgz#fc7efff0366fa082993511027d4e8a989b533c95"
+  integrity sha512-HLKNSi2/IvDm+PKgq0xqe7sObP8dsmjEENLM1xsD55/nLafiMQmeaHVh1aeuV56pw6h2ZLNjP8CRIE3fA2fYlQ==
 
 connect@^3.6.5:
   version "3.7.0"

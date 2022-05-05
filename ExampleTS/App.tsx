@@ -8,318 +8,282 @@
  * @format
  */
 
- import React from 'react';
- import {
-   SafeAreaView,
-   ScrollView,
-   StatusBar,
-   StyleSheet,
-   Text,
-   useColorScheme,
-   View,
-   Button,
-   NativeEventEmitter,
-   NativeModules,
- } from 'react-native';
- 
- const { DapiConnectManager } = NativeModules;
- const dapiConnectManagerEmitter = new NativeEventEmitter(DapiConnectManager);
- 
- import Dapi, {
-   DapiConfigurations,
-   DapiConnection,
-   DapiEnvironment,
-   IDapiConnection,
-   IBankBeneficiary,
-   IBankWireBeneficiary,
-   DapiLineAddress,
-   DapiBeneficiary,
-   DapiWireBeneficiary,
- } from 'connect-react-native';
- 
- var connection: IDapiConnection | null = null;
+import React, {useEffect, useState} from 'react';
+import {Picker} from '@react-native-picker/picker';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+  Button,
+  NativeEventEmitter,
+  NativeModules,
+} from 'react-native';
 
- var firstBeneficiary: IBankBeneficiary | null = null;
- var firstWireBeneficiary: IBankWireBeneficiary | null = null;
- 
- async function startDapi() {
-   let countries = ['AE', 'US'];
-   let configurations = new DapiConfigurations(countries, DapiEnvironment.sandbox);
-   configurations.postSuccessfulConnectionLoadingText = "Testtt";
-   await Dapi.instance
-     .start(
-       'APP_KEY',
-       'JohnDoe',
-       configurations,
-     )
-     .then(error => {
-       console.log('Dapi started successfully');
-     })
-     .catch(error => {
-       console.log('Dapi failed to start with error: ', error);
-     });
- }
- 
- function presentConnect() {
-   Dapi.instance.presentConnect();
- 
-   dapiConnectManagerEmitter.addListener(
-     'EventConnectSuccessful',
-     successConnectResult => console.log(successConnectResult),
-   );
-   dapiConnectManagerEmitter.addListener(
-     'EventConnectFailure',
-     failureConnectResult => console.log(failureConnectResult),
-   );
-   dapiConnectManagerEmitter.addListener('EventConnectDismissed', _ => {
-     console.log('Connect is dismissed');
-   });
- 
-   dapiConnectManagerEmitter.addListener(
-     'EventConnectBankRequest',
-     bankRequestResult => console.log(bankRequestResult),
-   );
- }
- 
- async function getConnections() {
-   await Dapi.instance
-     .getConnections()
-     .then(connections => {
-       console.log('Connections: ', connections);
-       if (connections.length > 0) {
-         connection = connections[0];
-       }
-     })
-     .catch(error => {
-       console.log('Dapi#getConnections() failed with error: ', error);
-     });
- }
- 
- async function getIdentity() {
-   await getConnections();
-   await connection?.getIdentity()
-     .then(response => {
-       console.log('Identity: ', response);
-     })
-     .catch(error => {
-       console.log('Dapi#getIdentity() failed with error: ', error);
-     });
- }
- 
- async function getAccounts() {
-   await getConnections();
-   await connection?.getAccounts()
-     .then(response => {
-       console.log('Accounts: ', response);
-     })
-     .catch(error => {
-       console.log('Dapi#getAccounts() failed with error: ', error);
-     });
- }
- 
- async function getCards() {
-   await getConnections();
-   await connection?.getCards()
-     .then(response => {
-       console.log('Cards: ', response);
-     })
-     .catch(error => {
-       console.log('Dapi#getCards() failed with error: ', error);
-     });
- }
- 
- async function getTransactionsForAccount() {
-   await getConnections();
-   let transactions = await connection?.getTransactionsForAccount(
-     connection.accounts[0],
-     new Date(1621235963109),
-     new Date(1623865763109),
-   );
-   console.log(transactions);
- }
- 
- async function getTransactionsForCard() {
-   await getConnections();
-   var transactions = await connection?.getTransactionsForCard(
-     connection.cards[0],
-     new Date(1621235963109),
-     new Date(1623865763109),
-   );
-   console.log(transactions);
- }
- 
- async function getCachedCards() {
-   await getConnections();
-   console.log('cachedCards: ', connection?.cards);
- }
- 
- async function getAccountsMetadata() {
-   await getConnections();
-   await connection?.getAccountsMetadata()
-     .then(response => {
-       console.log('Metadata: ', response);
-     })
-     .catch(error => {
-       console.log('Dapi#getAccountsMetadata() failed with error: ', error);
-     });
- }
- 
- async function getBeneficiaries() {
-   await getConnections();
-   await connection?.getBeneficiaries()
-     .then(response => {
-       console.log('Beneficiaries: ', response);
-       firstBeneficiary = response.beneficiaries[0];
-     })
-     .catch(error => {
-       console.log('Dapi#getBeneficiaries() failed with error: ', error);
-     });
- }
- 
- async function transfer() {
-   dapiConnectManagerEmitter.addListener('EventDapiTransferUIDismissed', _ => {
-     console.log('Transfer UI is dismissed');
-   });
- 
-   dapiConnectManagerEmitter.addListener(
-     'EventDapiUIWillTransfer',
-     uiWillTransferResult => console.log(uiWillTransferResult),
-   );
- 
-   connection?.createTransfer(null!, beneficiary, 0, 'test')
-     .then(response => {
-       console.log(`Transfer success ${response}`);
-     })
-     .catch(error => {
-       console.log(`Transfer failed with error ${error}`);
-     });
- }
- 
- async function transferToExistingBeneficiary() {
-   await getBeneficiaries();
-   await getConnections();
-   await connection?.createTransferToExistingBeneficiary(
-     connection?.accounts[0]!,
-     firstBeneficiary!.id,
-     1.43,
-     'testRemark',
-   )
-     .then(response => {
-       console.log('CreateTransferToExistingBeneficiary: ', response)
-       console.log(`operationID ${response.operationID}`);
-     })
-     .catch(error => {
-       let json = JSON.parse(error.message);
-       console.log(json);
-       let errorMessage = json.error;
-       console.log(`operationID ${json.operationID}`);
-       if (errorMessage.includes('Beneficiary will be activated')) {
-         console.log('This is a coolDownPeriod error');
-       }
-     });
- }
- 
- async function createBeneficiary() {
-   await getConnections();
-   await connection?.createBeneficiary(beneficiary)
-     .then(response => console.log(response))
-     .catch(error => console.log(error));
- }
- 
- async function getWireBeneficiaries() {
-   await getConnections();
-   await connection?.getWireBeneficiaries()
-     .then(response => {
-       console.log('Beneficiaries: ', response);
-       firstWireBeneficiary = response.beneficiaries[0];
-     })
-     .catch(error => {
-       console.log('Dapi#getWireBeneficiaries() failed with error: ', error);
-     });
- }
- 
- async function wireTransfer() {
-   dapiConnectManagerEmitter.addListener('EventDapiTransferUIDismissed', _ => {
-     console.log('Transfer UI is dismissed');
-   });
- 
-   dapiConnectManagerEmitter.addListener(
-     'EventDapiUIWillTransfer',
-     uiWillTransferResult => console.log(uiWillTransferResult),
-   );
- 
-   connection?.createWireTransfer(wireBeneficiary, null, 0, 'test')
-     .then(response => {
-       console.log(`Transfer success ${response}`);
-     })
-     .catch(error => {
-       console.log(`Transfer failed with error ${error}`);
-     });
- }
- 
- async function wireTransferToExistingBeneficiary() {
-   await getWireBeneficiaries();
-   await getConnections();
-   await connection?.createWireTransferToExistingBeneficiary(
-     connection?.accounts[0]!,
-     firstWireBeneficiary!.id,
-     1.43,
-     'testRemark',
-   )
-     .then(transfer => {
-       console.log('CreateWireTransferToExistingBeneficiary: ', transfer)
-       console.log(`operationID ${transfer.operationID}`);
-     })
-     .catch(error => {
-       let json = JSON.parse(error.message);
-       console.log(json);
-       let errorMessage = json.error;
-       console.log(`operationID ${json.operationID}`);
-       let account = json.account;
-       if (errorMessage.includes('Beneficiary will be activated')) {
-         console.log('This is a coolDownPeriod error');
-       }
-     });
- }
- 
- async function createWireBeneficiary() {
-   await getConnections();
-   await connection?.createWireBeneficiary(wireBeneficiary)
-     .then(beneficiary => console.log(beneficiary))
-     .catch(error => console.log(error));
- }
- 
- async function isStarted() {
-   var isStarted = await Dapi.instance.isStarted();
-   console.log(isStarted);
- }
- 
- async function clientUserID() {
-   var clientUserID = await Dapi.instance.clientUserID();
-   console.log(clientUserID);
- }
- 
- async function getParameters() {
-   await getConnections();
-   let response = await connection?.getParameters();
-   const jsonParams = JSON.parse(response!);
-   var prettyParams = JSON.stringify(jsonParams, null, 2);
-   console.log('connection params:\n', prettyParams);
- }
- 
- async function create() {
-   if (params == null) {
-     console.log('params field is null');
-     return;
-   }
-   params.forEach(async (val) => {
-     var connection = await DapiConnection.create(val);
-     console.log(connection);
-   })
- 
- }
+const {DapiConnectManager} = NativeModules;
+const dapiConnectManagerEmitter = new NativeEventEmitter(DapiConnectManager);
 
- var params: Array<string> = [
+import Dapi, {
+  DapiConfigurations,
+  DapiConnection,
+  DapiEnvironment,
+  IDapiConnection,
+  IBankBeneficiary,
+  IBankWireBeneficiary,
+  DapiLineAddress,
+  DapiBeneficiary,
+  DapiWireBeneficiary,
+} from 'connect-react-native';
+
+var selectedConnection: IDapiConnection | null = null;
+
+var firstBeneficiary: IBankBeneficiary | null = null;
+var firstWireBeneficiary: IBankWireBeneficiary | null = null;
+
+function addTransferListeners() {
+  dapiConnectManagerEmitter.addListener('EventDapiTransferUIDismissed', _ => {
+    console.log('Transfer UI is dismissed');
+  });
+
+  dapiConnectManagerEmitter.addListener(
+    'EventDapiUIWillTransfer',
+    uiWillTransferResult => console.log(uiWillTransferResult),
+  );
+}
+
+async function startDapi() {
+  let countries = ['AE', 'US'];
+  let configurations = new DapiConfigurations(
+    countries,
+    DapiEnvironment.sandbox,
+  );
+  configurations.postSuccessfulConnectionLoadingText = 'Testtt';
+  await Dapi.instance
+    .start('ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae', 'JohnDoe', configurations)
+    .then(error => {
+      console.log('Dapi started successfully');
+    })
+    .catch(error => {
+      console.log('Dapi failed to start with error: ', error);
+    });
+}
+
+async function getIdentity() {
+  await selectedConnection
+    ?.getIdentity()
+    .then(response => {
+      console.log('Identity: ', response);
+    })
+    .catch(error => {
+      console.log('Dapi#getIdentity() failed with error: ', error);
+    });
+}
+
+async function getAccounts() {
+  await selectedConnection
+    ?.getAccounts()
+    .then(response => {
+      console.log('Accounts: ', response);
+    })
+    .catch(error => {
+      console.log('Dapi#getAccounts() failed with error: ', error);
+    });
+}
+
+async function getCards() {
+  await selectedConnection
+    ?.getCards()
+    .then(response => {
+      console.log('Cards: ', response);
+    })
+    .catch(error => {
+      console.log('Dapi#getCards() failed with error: ', error);
+    });
+}
+
+async function getTransactionsForAccount() {
+  let transactions = await selectedConnection?.getTransactionsForAccount(
+    selectedConnection.accounts[0],
+    new Date(1621235963109),
+    new Date(1623865763109),
+  );
+  console.log(transactions);
+}
+
+async function getTransactionsForCard() {
+  var transactions = await selectedConnection?.getTransactionsForCard(
+    selectedConnection.cards[0],
+    new Date(1621235963109),
+    new Date(1623865763109),
+  );
+  console.log(transactions);
+}
+
+async function getCachedCards() {
+  console.log('cachedCards: ', selectedConnection?.cards);
+}
+
+async function getAccountsMetadata() {
+  await selectedConnection
+    ?.getAccountsMetadata()
+    .then(response => {
+      console.log('Metadata: ', response);
+    })
+    .catch(error => {
+      console.log('Dapi#getAccountsMetadata() failed with error: ', error);
+    });
+}
+
+async function getBeneficiaries() {
+  await selectedConnection
+    ?.getBeneficiaries()
+    .then(response => {
+      console.log('Beneficiaries: ', response);
+      firstBeneficiary = response.beneficiaries[0];
+    })
+    .catch(error => {
+      console.log('Dapi#getBeneficiaries() failed with error: ', error);
+    });
+}
+
+async function transfer() {
+  selectedConnection
+    ?.createTransfer(null!, beneficiary, 0, 'test')
+    .then(response => {
+      console.log(`Transfer success ${response}`);
+    })
+    .catch(error => {
+      console.log(`Transfer failed with error ${error}`);
+    });
+}
+
+async function transferToExistingBeneficiary() {
+  await getBeneficiaries();
+  await selectedConnection
+    ?.createTransferToExistingBeneficiary(
+      selectedConnection?.accounts[0]!,
+      firstBeneficiary!.id,
+      1.43,
+      'testRemark',
+    )
+    .then(response => {
+      console.log('CreateTransferToExistingBeneficiary: ', response);
+      console.log(`operationID ${response.operationID}`);
+    })
+    .catch(error => {
+      let json = JSON.parse(error.message);
+      console.log(json);
+      let errorMessage = json.error;
+      console.log(`operationID ${json.operationID}`);
+      if (errorMessage.includes('Beneficiary will be activated')) {
+        console.log('This is a coolDownPeriod error');
+      }
+    });
+}
+
+async function createBeneficiary() {
+  await selectedConnection
+    ?.createBeneficiary(beneficiary)
+    .then(response => console.log(response))
+    .catch(error => console.log(error));
+}
+
+async function getWireBeneficiaries() {
+  await selectedConnection
+    ?.getWireBeneficiaries()
+    .then(response => {
+      console.log('Beneficiaries: ', response);
+      firstWireBeneficiary = response.beneficiaries[0];
+    })
+    .catch(error => {
+      console.log('Dapi#getWireBeneficiaries() failed with error: ', error);
+    });
+}
+
+async function wireTransfer() {
+  dapiConnectManagerEmitter.addListener('EventDapiTransferUIDismissed', _ => {
+    console.log('Transfer UI is dismissed');
+  });
+
+  dapiConnectManagerEmitter.addListener(
+    'EventDapiUIWillTransfer',
+    uiWillTransferResult => console.log(uiWillTransferResult),
+  );
+
+  selectedConnection
+    ?.createWireTransfer(wireBeneficiary, null, 0, 'test')
+    .then(response => {
+      console.log(`Transfer success ${response}`);
+    })
+    .catch(error => {
+      console.log(`Transfer failed with error ${error}`);
+    });
+}
+
+async function wireTransferToExistingBeneficiary() {
+  await getWireBeneficiaries();
+  await selectedConnection
+    ?.createWireTransferToExistingBeneficiary(
+      selectedConnection?.accounts[0]!,
+      firstWireBeneficiary!.id,
+      1.43,
+      'testRemark',
+    )
+    .then(transfer => {
+      console.log('CreateWireTransferToExistingBeneficiary: ', transfer);
+      console.log(`operationID ${transfer.operationID}`);
+    })
+    .catch(error => {
+      let json = JSON.parse(error.message);
+      console.log(json);
+      let errorMessage = json.error;
+      console.log(`operationID ${json.operationID}`);
+      let account = json.account;
+      if (errorMessage.includes('Beneficiary will be activated')) {
+        console.log('This is a coolDownPeriod error');
+      }
+    });
+}
+
+async function createWireBeneficiary() {
+  await selectedConnection
+    ?.createWireBeneficiary(wireBeneficiary)
+    .then(beneficiary => console.log(beneficiary))
+    .catch(error => console.log(error));
+}
+
+async function isStarted() {
+  var isStarted = await Dapi.instance.isStarted();
+  console.log(isStarted);
+}
+
+async function clientUserID() {
+  var clientUserID = await Dapi.instance.clientUserID();
+  console.log(clientUserID);
+}
+
+async function getParameters() {
+  let response = await selectedConnection?.getParameters();
+  const jsonParams = JSON.parse(response!);
+  var prettyParams = JSON.stringify(jsonParams, null, 2);
+  console.log('connection params:\n', prettyParams);
+}
+
+async function create() {
+  if (params == null) {
+    console.log('params field is null');
+    return;
+  }
+  params.forEach(async val => {
+    var connection = await DapiConnection.create(val);
+    console.log(connection);
+  });
+}
+
+var params: Array<string> = [
   `
   {
     "accessCode" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiIzZTY4MmY4ODk0ZDU3Y2MyY2Q3Y2ViYTg0ZTlhMzgwYjY5MmVjMzQxODZjZGE1ZDllMGE1M2Q2Y2Y3ZDNkMDAwIiwiZXhwIjoxNjMxMjYzMjE2LCJpYXQiOjE2MzEyNjI5MTYsImp0aSI6ImQzZmQ0NzQ3LTJlZTQtNDQ3OC1hNTZmLWRmOWU3ODFiMzlkZiIsIm90cCI6InpETko2SmJkdHR1bGVFT1VST3ZMZmhpQXA4MVdMa2hCbHlWMGl1SXQ1TFE9IiwidXVpZCI6IlNDQkxBRUFEOjJmMDkxZWVhLTU0NDAtNDE0MS04ZGMyLWIxNmY4ZDVhODgxZCJ9.hzsEt5HwbWPU8tTlAlQdpuy1eJhfz6juhsR5mncOah4",
@@ -339,7 +303,7 @@
     "bankId" : "SCBLAEAD",
     "connectionID" : "70fa9d9d-3ba9-4d71-836a-fc09205bac17"
   }
-  `
+  `,
 ];
 
 let address = new DapiLineAddress('baniyas ', 'dubai', 'united arab emirates');
@@ -355,172 +319,249 @@ let beneficiary = new DapiBeneficiary(
   'AE',
   'Baniyas Road Deira PO Box 777 Dubai UAE',
   'Emirates NBD Bank PJSC',
-  "Aashik"
+  'Aashik',
 );
 
-let wireAddress = new DapiLineAddress('2400 bruce street UCA stadium park bld 6 ', '', '');
+let wireAddress = new DapiLineAddress(
+  '2400 bruce street UCA stadium park bld 6 ',
+  '',
+  '',
+);
 
 let wireBeneficiary = new DapiWireBeneficiary(
   wireAddress,
-  "TestAccount",
-  "Omar",
-  "Agoor",
-  "OmarChase",
-  "Conway",
-  "Arkansas",
-  "US",
-  "72305",
-  "retail",
-  "checking",
-  "953349354",
-  "1234567654321",
+  'TestAccount',
+  'Omar',
+  'Agoor',
+  'OmarChase',
+  'Conway',
+  'Arkansas',
+  'US',
+  '72305',
+  'retail',
+  'checking',
+  '953349354',
+  '1234567654321',
 );
- 
- import { Colors, Header } from 'react-native/Libraries/NewAppScreen';
- import { Alert } from 'react-native';
- 
- const Section: React.FC<{
-   title: string;
- }> = ({ children, title }) => {
-   const isDarkMode = useColorScheme() === 'dark';
-   return (
-     <View style={styles.sectionContainer}>
-       <Text
-         style={[
-           styles.sectionTitle,
-           {
-             color: isDarkMode ? Colors.white : Colors.black,
-           },
-         ]}>
-         {title}
-       </Text>
-       <Text
-         style={[
-           styles.sectionDescription,
-           {
-             color: isDarkMode ? Colors.light : Colors.dark,
-           },
-         ]}>
-         {children}
-       </Text>
-     </View>
-   );
- };
- 
- const App = () => {
-   const isDarkMode = useColorScheme() === 'dark';
- 
-   const backgroundStyle = {
-     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-   };
- 
-   return (
-     <SafeAreaView style={backgroundStyle}>
-       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-       <ScrollView
-         contentInsetAdjustmentBehavior="automatic"
-         style={backgroundStyle}>
-         <View style={styles.body}>
-           <View style={styles.sectionContainer}>
-             <Button title="Start" onPress={() => startDapi()} />
-             <Button
-               title="Is started"
-               onPress={() => {
-                 isStarted();
-               }}
-             />
-             <Button title="Client User ID" onPress={() => clientUserID()} />
-             {/* <Button title="Get Configs" onPress={() => getConfigurations()} />
-              <Button title="Reset Configs" onPress={() => resetConfigs()} /> */}
-           </View>
-           <View style={styles.sectionContainer}>
-             <Button title="Present Connect" onPress={() => presentConnect()} />
-             <Button title="Get Connections" onPress={() => getConnections()} />
-             <Button
-               title="Connection Parameters"
-               onPress={() => getParameters()}
-             />
-             <Button title="Create Connection" onPress={() => create()} />
-           </View>
- 
-           <View style={styles.sectionContainer}>
-             <Button title="Identity" onPress={() => getIdentity()} />
-             <Button title="Accounts" onPress={() => getAccounts()} />
-             <Button title="Get Cards" onPress={() => getCards()} />
-             <Button title="Get Cached Cards" onPress={() => getCachedCards()} />
-             <Button
-               title="Get Transactions For Account"
-               onPress={() => getTransactionsForAccount()}
-             />
-             <Button
-               title="Get Transactions For Card"
-               onPress={() => getTransactionsForCard()}
-             />
-           </View>
- 
-           <View style={styles.sectionContainer}>
-             <Button
-               title="Accounts Metadata"
-               onPress={() => getAccountsMetadata()}
-             />
-           </View>
- 
-           <View style={styles.sectionContainer}>
-             <Button
-               title="Get Beneficiaries"
-               onPress={() => getBeneficiaries()}
-             />
-             <Button title="Create Transfer" onPress={() => transfer()} />
-             <Button
-               title="Create Transfer To Existing Beneficiary"
-               onPress={() => transferToExistingBeneficiary()}
-             />
-             <Button
-               title="Create Beneficiary"
-               onPress={() => createBeneficiary()}
-             />
-           </View>
-           <View style={styles.sectionContainer}>
-             <Button
-               title="Get Wire Beneficiaries"
-               onPress={() => getWireBeneficiaries()}
-             />
-             <Button title="Create Wire Transfer" onPress={() => wireTransfer()} />
-             <Button
-               title="Create Wire Transfer To Existing Beneficiary"
-               onPress={() => wireTransferToExistingBeneficiary()}
-             />
-             <Button
-               title="Create Wire Beneficiary"
-               onPress={() => createWireBeneficiary()}
-             />
-           </View>
-         </View>
-       </ScrollView>
-     </SafeAreaView>
-   );
- };
- 
- const styles = StyleSheet.create({
-   sectionContainer: {
-     marginTop: 32,
-     paddingHorizontal: 24,
-   },
-   sectionTitle: {
-     fontSize: 24,
-     fontWeight: '600',
-   },
-   body: {
-     backgroundColor: Colors.white,
-   },
-   sectionDescription: {
-     marginTop: 8,
-     fontSize: 18,
-     fontWeight: '400',
-   },
-   highlight: {
-     fontWeight: '700',
-   },
- });
- 
- export default App;
+
+import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
+
+const Section: React.FC<{
+  title: string;
+}> = ({children, title}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+  return (
+    <View style={styles.sectionContainer}>
+      <Text
+        style={[
+          styles.sectionTitle,
+          {
+            color: isDarkMode ? Colors.white : Colors.black,
+          },
+        ]}>
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const App = () => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  const [selectedValue, setSelectedValue] = useState('');
+  const [presentConnections, setConnections] = useState<IDapiConnection[]>([]);
+
+  const start = async () => {
+    await startDapi()
+      .then(result => {
+        console.log('startDapi', result);
+      })
+      .catch(error => console.error(error));
+
+    await Dapi.instance.getConnections().then(result => {
+      setConnections(result);
+    });
+
+    addConnectListeners();
+    addTransferListeners();
+  };
+
+  const renderPresentConnections = () => {
+    return presentConnections.map(presentConnection => {
+      return (
+        <Picker.Item
+          key={presentConnection.userID}
+          label={presentConnection.bankShortName}
+          value={presentConnection.userID}
+        />
+      );
+    });
+  };
+
+  useEffect(() => {
+    start();
+  }, []);
+
+  async function addConnectListeners() {
+    dapiConnectManagerEmitter.addListener(
+      'EventConnectSuccessful',
+      async successConnectResult => {
+        console.log('EventConnectSuccessful', successConnectResult);
+        await Dapi.instance.getConnections().then(result => {
+          console.log('getConnections', result);
+          setConnections(result);
+        });
+      },
+    );
+    dapiConnectManagerEmitter.addListener(
+      'EventConnectFailure',
+      failureConnectResult => console.log(failureConnectResult),
+    );
+    dapiConnectManagerEmitter.addListener('EventConnectDismissed', _ => {
+      console.log('Connect is dismissed');
+    });
+
+    dapiConnectManagerEmitter.addListener(
+      'EventConnectBankRequest',
+      bankRequestResult => console.log(bankRequestResult),
+    );
+  }
+
+  function presentConnect() {
+    Dapi.instance.presentConnect();
+  }
+
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <View style={styles.body}>
+          <View style={styles.sectionContainer}>
+            <Picker
+              selectedValue={selectedValue}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedValue(itemValue);
+                presentConnections.filter(connection => {
+                  if (connection.userID === itemValue) {
+                    selectedConnection = connection;
+                  }
+                });
+              }}>
+              {renderPresentConnections()}
+            </Picker>
+            <Button
+              title="Is started"
+              onPress={() => {
+                isStarted();
+              }}
+            />
+            <Button title="Client User ID" onPress={() => clientUserID()} />
+          </View>
+          <View style={styles.sectionContainer}>
+            <Button title="Present Connect" onPress={() => presentConnect()} />
+            <Button
+              title="Connection Parameters"
+              onPress={() => getParameters()}
+            />
+            <Button title="Create Connection" onPress={() => create()} />
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Button title="Identity" onPress={() => getIdentity()} />
+            <Button title="Accounts" onPress={() => getAccounts()} />
+            <Button title="Get Cards" onPress={() => getCards()} />
+            <Button title="Get Cached Cards" onPress={() => getCachedCards()} />
+            <Button
+              title="Get Transactions For Account"
+              onPress={() => getTransactionsForAccount()}
+            />
+            <Button
+              title="Get Transactions For Card"
+              onPress={() => getTransactionsForCard()}
+            />
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Button
+              title="Accounts Metadata"
+              onPress={() => getAccountsMetadata()}
+            />
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <Button
+              title="Get Beneficiaries"
+              onPress={() => getBeneficiaries()}
+            />
+            <Button title="Create Transfer" onPress={() => transfer()} />
+            <Button
+              title="Create Transfer To Existing Beneficiary"
+              onPress={() => transferToExistingBeneficiary()}
+            />
+            <Button
+              title="Create Beneficiary"
+              onPress={() => createBeneficiary()}
+            />
+          </View>
+          <View style={styles.sectionContainer}>
+            <Button
+              title="Get Wire Beneficiaries"
+              onPress={() => getWireBeneficiaries()}
+            />
+            <Button
+              title="Create Wire Transfer"
+              onPress={() => wireTransfer()}
+            />
+            <Button
+              title="Create Wire Transfer To Existing Beneficiary"
+              onPress={() => wireTransferToExistingBeneficiary()}
+            />
+            <Button
+              title="Create Wire Beneficiary"
+              onPress={() => createWireBeneficiary()}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  body: {
+    backgroundColor: Colors.white,
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+  },
+  highlight: {
+    fontWeight: '700',
+  },
+});
+
+export default App;
