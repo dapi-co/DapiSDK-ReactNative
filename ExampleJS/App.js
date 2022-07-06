@@ -36,13 +36,21 @@ async function startDapi() {
   let configs = {
     environment: 'sandbox',
     isExperimental: true,
-    countries: ['US'],
-    postSuccessfulConnectionLoadingText: 'Testtt',
+    countries: ['US', 'AE'],
+    postSuccessfulConnectionLoadingText: 'Verifying..',
+    endPointExtraBody: {
+      key1: "value1",
+      key2: "value2",
+    },
+    endPointExtraHeaderFields: {
+      key1: "value1",
+      key2: "value2",
+    },
   };
 
   await Dapi.instance
     .start(
-      'APP_KEY',
+      'ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae',
       'JohnDoe',
       configs,
     )
@@ -93,10 +101,10 @@ async function transfer() {
       line2: 'dubai',
       line3: 'united arab emirates',
     },
-    accountNumber: '1623404370879825504324',
+    accountNumber: '1647518280840289401662',
     bankName: 'STANDARD CHARTERED BANK',
     swiftCode: 'SCBLAEAD',
-    iban: 'DAPIBANKAEENBD1623404370879825504324',
+    iban: 'DAPIBANKAEHSBC1647518280840289401662',
     country: 'AE',
     branchAddress: 'Dubai Mall',
     branchName: 'Dubai Mall',
@@ -112,6 +120,8 @@ async function transfer() {
     .catch(error => {
       let json = JSON.parse(error.message);
       let errorMessage = json.error;
+      let opID = json.operationID;
+      console.log(opID);
       console.log(json);
       if (errorMessage.includes('Beneficiary will be activated')) {
         console.log('This is a coolDownPeriod error');
