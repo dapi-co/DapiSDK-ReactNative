@@ -62,7 +62,11 @@ async function startDapi() {
   );
   configurations.postSuccessfulConnectionLoadingText = 'Testtt';
   await Dapi.instance
-    .start('ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae', 'JohnDoe', configurations)
+    .start(
+      'ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae',
+      'JohnDoe',
+      configurations,
+    )
     .then(error => {
       console.log('Dapi started successfully');
     })
@@ -153,7 +157,7 @@ async function transfer() {
   selectedConnection
     ?.createTransfer(null!, beneficiary, 0, 'test')
     .then(response => {
-      console.log(`Transfer success ${response}`);
+      console.log(`Transfer success ${response.remark} ${response.reference}`);
     })
     .catch(error => {
       console.log(`Transfer failed with error ${error}`);
@@ -310,11 +314,11 @@ let address = new DapiLineAddress('baniyas ', 'dubai', 'united arab emirates');
 
 let beneficiary = new DapiBeneficiary(
   address,
-  '1623404370879825504324',
+  '1647518280840289401662',
   'Aashik Ahmed Mohamed Meera',
   'Emirates NBD Bank PJSC',
   'EBILAEAD',
-  'DAPIBANKAEENBD1623404370879825504324',
+  'DAPIBANKAEHSBC1647518280840289401662',
   '+971585859206',
   'AE',
   'Baniyas Road Deira PO Box 777 Dubai UAE',
