@@ -10,7 +10,7 @@ import {
   NativeModules,
 } from 'react-native';
 
-import Dapi, {DapiConnection} from 'connect-react-native';
+import Dapi, {DapiConnection, DapiTransactionsType} from 'connect-react-native';
 
 import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
 
@@ -39,21 +39,17 @@ async function startDapi() {
     countries: ['US', 'AE'],
     postSuccessfulConnectionLoadingText: 'Verifying..',
     endPointExtraBody: {
-      key1: "value1",
-      key2: "value2",
+      key1: 'value1',
+      key2: 'value2',
     },
     endPointExtraHeaderFields: {
-      key1: "value1",
-      key2: "value2",
+      key1: 'value1',
+      key2: 'value2',
     },
   };
 
   await Dapi.instance
-    .start(
-      'ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae',
-      'JohnDoe',
-      configs,
-    )
+    .start('APP_KEY', 'JohnDoe', configs)
     .then(result => {
       console.log('=====\nStarted:');
       console.log(result);
@@ -308,8 +304,9 @@ async function deleteConnections() {
 async function getTransactionsForAccount() {
   var response = await selectedConnection.getTransactionsForAccount(
     selectedConnection.accounts[0],
-    new Date(1621235963109),
-    new Date(1623865763109),
+    new Date(1650371076000),
+    new Date(),
+    DapiTransactionsType.enriched,
   );
   console.log(response);
 }
@@ -318,10 +315,17 @@ async function getTransactionsForCard() {
   var cardsResponse = await selectedConnection.cards;
   var transactions = await selectedConnection.getTransactionsForCard(
     cardsResponse.cards[0],
-    new Date(1621235963109),
-    new Date(1623865763109),
+    new Date(1650371076000),
+    new Date(),
+    DapiTransactionsType.enriched,
   );
-  console.log(transactions[0].amount);
+  console.log(transactions);
+}
+
+async function presentAccountSelection() {
+  await selectedConnection?.presentAccountSelection().then(account => {
+    console.log(account);
+  });
 }
 
 let params = `{
@@ -516,6 +520,10 @@ const App: () => React$Node = () => {
             <Button
               title="Create Wire Beneficiary"
               onPress={() => createWireBeneficiary()}
+            />
+            <Button
+              title="Present Account Selection"
+              onPress={() => presentAccountSelection()}
             />
           </View>
         </View>

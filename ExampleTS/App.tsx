@@ -36,6 +36,7 @@ import Dapi, {
   DapiLineAddress,
   DapiBeneficiary,
   DapiWireBeneficiary,
+  DapiTransactionsType,
 } from 'connect-react-native';
 
 var selectedConnection: IDapiConnection | null = null;
@@ -62,11 +63,7 @@ async function startDapi() {
   );
   configurations.postSuccessfulConnectionLoadingText = 'Testtt';
   await Dapi.instance
-    .start(
-      'ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae',
-      'JohnDoe',
-      configurations,
-    )
+    .start('APP_KEY', 'JohnDoe', configurations)
     .then(error => {
       console.log('Dapi started successfully');
     })
@@ -111,8 +108,9 @@ async function getCards() {
 async function getTransactionsForAccount() {
   let transactions = await selectedConnection?.getTransactionsForAccount(
     selectedConnection.accounts[0],
-    new Date(1621235963109),
-    new Date(1623865763109),
+    new Date(1650371076000),
+    new Date(),
+    DapiTransactionsType.enriched,
   );
   console.log(transactions);
 }
@@ -120,8 +118,9 @@ async function getTransactionsForAccount() {
 async function getTransactionsForCard() {
   var transactions = await selectedConnection?.getTransactionsForCard(
     selectedConnection.cards[0],
-    new Date(1621235963109),
-    new Date(1623865763109),
+    new Date(1650371076000),
+    new Date(),
+    DapiTransactionsType.enriched,
   );
   console.log(transactions);
 }
@@ -284,6 +283,12 @@ async function create() {
   params.forEach(async val => {
     var connection = await DapiConnection.create(val);
     console.log(connection);
+  });
+}
+
+async function presentAccountSelection() {
+  await selectedConnection?.presentAccountSelection().then(account => {
+    console.log(account);
   });
 }
 
@@ -538,6 +543,10 @@ const App = () => {
             <Button
               title="Create Wire Beneficiary"
               onPress={() => createWireBeneficiary()}
+            />
+            <Button
+              title="Present Account Selection"
+              onPress={() => presentAccountSelection()}
             />
           </View>
         </View>
