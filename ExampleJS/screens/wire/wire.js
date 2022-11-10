@@ -1,6 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {DapiLineAddress, DapiWireBeneficiary} from 'connect-react-native';
 import React from 'react';
 import {
   StatusBar,
@@ -10,40 +7,37 @@ import {
   useColorScheme,
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import {common} from '../../App';
-import {RootStackParamList} from '../common/RootStackParam';
+import {connection} from '../../App';
 import styles from '../common/styles';
 
-type WireProp = StackNavigationProp<RootStackParamList, 'Payment'>;
-
-const Wire = () => {
-  const navigation = useNavigation<WireProp>();
+const Wire = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   async function wireTransfer() {
-    let address = new DapiLineAddress(
-      '2400 bruce street UCA stadium park bld 6 ',
-      '',
-      '',
-    );
+    var address = {
+      line1: '2400 bruce street UCA stadium park bld 6',
+      line2: '',
+      line3: '',
+    };
 
-    let beneficiary = new DapiWireBeneficiary(
-      address,
-      'TestAccount',
-      'Omar',
-      'Agoor',
-      'OmarChase',
-      'Conway',
-      'Arkansas',
-      'US',
-      '72305',
-      'retail',
-      'checking',
-      '953349354',
-      '1234567654321',
-    );
-    await common.connection
-      ?.createWireTransfer(beneficiary, null, 0, 'Remark')
+    var wireBeneficiary = {
+      linesAddress: address,
+      name: 'TestAccount',
+      firstName: 'Omar',
+      lastName: 'Agoor',
+      nickname: 'OmarChase',
+      city: 'Conway',
+      state: 'Arkansas',
+      country: 'US',
+      zipCode: '72305',
+      receiverType: 'retail',
+      receiverAccountType: 'checking',
+      routingNumber: '953349354',
+      accountNumber: '1234567654321',
+    };
+
+    await connection
+      ?.createWireTransfer(wireBeneficiary, null, 0, 'Remark')
       .then(response => {})
       .catch(error => {});
   }

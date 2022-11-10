@@ -5,8 +5,6 @@ import ApiSelection from './screens/api_selection';
 import {RootStackParamList} from './screens/common/RootStackParam';
 import {
   DapiConnection,
-  DapiBeneficiary,
-  DapiWireBeneficiary,
 } from 'connect-react-native';
 import Data from './screens/data/data';
 import Payment from './screens/payment/payment';
@@ -56,8 +54,6 @@ const App = () => {
 
 class Common {
   connection: DapiConnection | undefined;
-  beneficiary: DapiBeneficiary | undefined;
-  wireBeneficiary: DapiWireBeneficiary | undefined;
 }
 
 export const common = new Common();

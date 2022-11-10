@@ -1,6 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {DapiBeneficiary, DapiLineAddress} from 'connect-react-native';
 import React from 'react';
 import {
   StatusBar,
@@ -10,36 +7,31 @@ import {
   useColorScheme,
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import {common} from '../../App';
-import {RootStackParamList} from '../common/RootStackParam';
+import {connection} from '../../App';
 import styles from '../common/styles';
 
-type PaymentProp = StackNavigationProp<RootStackParamList, 'Payment'>;
-
-const Payment = () => {
-  const navigation = useNavigation<PaymentProp>();
+const Payment = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   async function transfer() {
-    let address = new DapiLineAddress(
-      'baniyas ',
-      'dubai',
-      'united arab emirates',
-    );
-    let beneficiary = new DapiBeneficiary(
-      address,
-      '1647518280840289401662',
-      'Aashik Ahmed Mohamed Meera',
-      'Emirates NBD Bank PJSC',
-      'EBILAEAD',
-      'DAPIBANKAEHSBC1647518280840289401662',
-      '+971585859206',
-      'AE',
-      'Baniyas Road Deira PO Box 777 Dubai UAE',
-      'Emirates NBD Bank PJSC',
-      'Aashik',
-    );
-    await common.connection
+    var beneficiary = {
+      linesAddress: {
+        line1: 'baniyas road',
+        line2: 'dubai',
+        line3: 'united arab emirates',
+      },
+      accountNumber: '1623404370879825504324',
+      bankName: 'STANDARD CHARTERED BANK',
+      swiftCode: 'SCBLAEAD',
+      iban: 'DAPIBANKAEENBD1623404370879825504324',
+      country: 'AE',
+      branchAddress: 'Dubai Mall',
+      branchName: 'Dubai Mall',
+      phoneNumber: '+971585859206',
+      name: 'Name',
+      nickname: 'Nickname',
+    };
+    await connection
       ?.createTransfer(null, beneficiary, 0, 'Remark')
       .then(response => {})
       .catch(error => {});
