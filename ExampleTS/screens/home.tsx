@@ -2,6 +2,8 @@ import Dapi, {
   DapiConfigurations,
   DapiConnection,
   DapiEnvironment,
+  DapiTheme,
+  DapiThemeConfigurations,
   IDapiConnection,
 } from 'connect-react-native';
 import React, {useState, useEffect} from 'react';
@@ -35,9 +37,20 @@ async function startDapi() {
     countries,
     DapiEnvironment.sandbox,
   );
+  let primaryColor = new Map<string, string>();
+  primaryColor.set('lightMode', '#610903');
+  primaryColor.set('darkMode', '#cf1002');
+  configurations.theme = new DapiThemeConfigurations(
+    DapiTheme.dark,
+    Object.fromEntries(primaryColor),
+  );
   configurations.postSuccessfulConnectionLoadingText = 'Testtt';
   await Dapi.instance
-    .start('APP_KEY', 'CLIENT_USER_ID', configurations)
+    .start(
+      'ce15a3407b6561da87bd847e27b2f530a6a84279d29d686b3daf60ca2f570cae',
+      'CLIENT_USER_ID',
+      configurations,
+    )
     .then(error => {
       console.log('Dapi started successfully');
     })

@@ -14,7 +14,17 @@ interface TransactionsProps {
 const Transactions = ({isAccountTransactions}: TransactionsProps) => {
   const [response, setResponse] = useState<ITransactionResponse | null>(null);
   async function getTransactionsForAccount() {
-    let account = await common.connection?.presentAccountSelection();
+    let accountID = await common.connection?.presentAccountSelection();
+    let accountsResponse = await common.connection?.getAccounts();
+    let account = accountsResponse?.accounts.find(a => {
+      console.log('Check account: ', a.id);
+      if (a.id === accountID) {
+        return a;
+      }
+    });
+    console.log('accountID: ', accountID);
+    console.log('account: ', account);
+    console.log('account: ', accountsResponse);
     await common.connection
       ?.getTransactionsForAccount(
         account!,

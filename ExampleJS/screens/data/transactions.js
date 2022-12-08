@@ -9,7 +9,13 @@ import Snackbar from 'react-native-snackbar';
 const Transactions = ({isAccountTransactions}) => {
   const [response, setResponse] = useState(null);
   async function getTransactionsForAccount() {
-    let account = await connection?.presentAccountSelection();
+    let accountID = await connection?.presentAccountSelection();
+    let accountsResponse = await connection?.getAccounts();
+    let account = accountsResponse.accounts.find(a => {
+      if (a.id == accountID) {
+        return a;
+      }
+    });
     await connection
       ?.getTransactionsForAccount(
         account,
