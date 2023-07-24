@@ -2381,10 +2381,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
-connect-react-native@^2.38.1:
-  version "2.38.1"
-  resolved "https://registry.yarnpkg.com/connect-react-native/-/connect-react-native-2.38.1.tgz#d37583179d338571fed3aaf8233d180520581bfa"
-  integrity sha512-+uCYIXLPV4PC5E1LQQPqjl4TpQ8oBbV373dC/13EerkokBvLdL+marigqlKUMXqbHwVJ/ItrctxBmTSheP+hIA==
+connect-react-native@^2.46.0:
+  version "2.46.0"
+  resolved "https://registry.yarnpkg.com/connect-react-native/-/connect-react-native-2.46.0.tgz#ebe3085f43a5d0b68c90a202297436439e7ef943"
+  integrity sha512-42i82NPkzRoBhojRi7yteL2Q6FKfvKde9TuKiS1ctI9JL8Jcs4zbLnCgYmOSIsUepXoSdkcJlYu9qmC89YyPIA==
 
 connect@^3.6.5:
   version "3.7.0"
