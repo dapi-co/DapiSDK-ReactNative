@@ -44,10 +44,10 @@ async function startDapi() {
     DapiTheme.dark,
     Object.fromEntries(primaryColor),
   );
-  configurations.postSuccessfulConnectionLoadingText = 'Testtt';
+  configurations.postSuccessfulConnectionLoadingText = 'Test';
   await Dapi.instance
     .start('APP_KEY', 'CLIENT_USER_ID', configurations)
-    .then(error => {
+    .then(() => {
       console.log('Dapi started successfully');
     })
     .catch(error => {
