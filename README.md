@@ -19,7 +19,7 @@ You can check out our [React-Native Integration Guide](https://docs.dapi.com/doc
 1. Download and install [Node, Android Studio, Xcode, VSCode](https://reactnative.dev/docs/environment-setup).
 2. Clone the project `git clone https://github.com/dapi-co/DapiSDK-ReactNative.git`
 3. Run `yarn` to install dependencies
-4. Open the project in VSCode and navigate to `App.tsx` and replace `APP_KEY` with your appKey. Can be obtained from [Dapi Dashboard](https://dashboard.dapi.com/login) 
+4. Open the project in VSCode and navigate to `screens/home.tsx` and replace `APP_KEY` with your appKey. Can be obtained from [Dapi Dashboard](https://dashboard.dapi.com/login) 
 5. Android:
     * Open `android` project folder in Android Studio and go to `Settings -> Build, Execution, Deployment ->  Build Tools -> Gradle -> Gradle JDK` and select JDK 17 if not selected.
     * Open `build.gradle` and replace applicationId value `com.dapi.app` with your Bundle ID.
