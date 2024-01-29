@@ -29,5 +29,5 @@ You can check out our [React-Native Integration Guide](https://docs.dapi.com/doc
     * In the Project Navigator, select the project file -> General -> Identity then replace Bundle Identifier value `com.dapi.app` with your Bundle ID
 7. Run the app from the IDE or run command `npx react-native run-android` to run Android or `npx react-native run-ios` to run iOS.
 8. DapiSDK will start successfully with the correct `AppKey` and `BundleID`.
-9. Click `Connect` to select your bank and enter credentials to login through Dapi. You can create a sandbox account in your [Dapi Dashboard](https://dashboard.dapi.com/login) project
+9. Click `Connect` to select your bank and enter credentials to login through Dapi. You can create a sandbox bank account in your [Dapi Dashboard](https://dashboard.dapi.com/login) project to login in the Sandbox environment.
 10. After a successful connection, a DapiConnection object is generated and used for making calls to Dapi endpoints that you can call by clicking on any of the buttons like `Get Identity` and `Create Transfer`.
