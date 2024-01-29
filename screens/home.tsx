@@ -46,11 +46,7 @@ async function startDapi() {
   );
   configurations.postSuccessfulConnectionLoadingText = "Test";
   await Dapi.instance
-    .start(
-      "36d6cff54b48d0b81dc47ec5115a7bfaf65b15dce4086fa39d15341a125a39bd",
-      "CLIENT_USER_ID",
-      configurations
-    )
+    .start("APP_KEY", "CLIENT_USER_ID", configurations)
     .then(() => {
       console.log("Dapi started successfully");
     })
