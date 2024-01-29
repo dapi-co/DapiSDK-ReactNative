@@ -1,0 +1,1 @@
+../../../../../node_modules/connect-react-native/ios/DAPIBankConnection+Dictionary.h

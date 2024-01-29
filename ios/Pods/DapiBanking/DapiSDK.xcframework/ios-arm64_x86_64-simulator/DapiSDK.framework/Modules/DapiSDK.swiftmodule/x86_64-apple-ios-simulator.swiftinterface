@@ -1,0 +1,848 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name DapiSDK
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+@_exported import DapiSDK
+import Foundation
+import ImageIO
+import Swift
+import SystemConfiguration
+import UIKit
+import WebKit
+import _Concurrency
+import _StringProcessing
+import os
+@objc(DAPITransactionType) public enum DAPITransactionType : Swift.Int {
+  case `default`
+  case enriched
+  case categorized
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension DapiSDK.Dapi {
+  public func bankBeneficiaries(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIBankBeneficiariesResponse, Swift.Error>) -> Swift.Void))
+  public func bankWireBeneficiaries(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIBankWireBeneficiariesResponse, Swift.Error>) -> Swift.Void))
+  public func createBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, beneficiaryDetails beneficiary: DapiSDK.DAPIBeneficiary, completion: @escaping ((Swift.Result<DapiSDK.DAPIResponseResult, Swift.Error>) -> Swift.Void))
+  public func createWireBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, beneficiaryDetails beneficiary: DapiSDK.DAPIWireBeneficiary, completion: @escaping ((Swift.Result<DapiSDK.DAPIResponseResult, Swift.Error>) -> Swift.Void))
+  public func createTransferToExistBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID accountID: Swift.String, receiverBeneficiaryID beneficiaryID: Swift.String, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+  public func createWireTransferToExistBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID accountID: Swift.String, receiverBeneficiaryID beneficiaryID: Swift.String, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+  public func createWireTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccount account: DapiSDK.DAPIBankAccount, receiverBeneficiary beneficiary: DapiSDK.DAPIWireBeneficiary?, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+  public func createTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccount account: DapiSDK.DAPIBankAccount, receiverBeneficiary beneficiary: DapiSDK.DAPIBeneficiary?, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+  public func createACHPullTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccount account: DapiSDK.DAPIBankAccount, amount: Swift.Float, description: Swift.String, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+  public func nymcardLoadFunds(bankConnection: DapiSDK.DAPIBankConnection, token: Swift.String, senderBankAccount account: DapiSDK.DAPIBankAccount, amount: Swift.Float, completion: @escaping ((Swift.Result<DapiSDK.DAPITransferResult, Swift.Error>) -> Swift.Void))
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class DAPIBankAccountsVC : UIKit.UIViewController {
+  @objc @_Concurrency.MainActor(unsafe) public var accountDidSelect: ((DapiSDK.DAPIBankAccount) -> Swift.Void)?
+  @objc @_Concurrency.MainActor(unsafe) public var accountSelectionFailed: ((Swift.Error?) -> Swift.Void)?
+  @objc @_Concurrency.MainActor(unsafe) public init(bankConnection: DapiSDK.DAPIBankConnection)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+extension DapiSDK.DAPIBankAccountsVC : UIKit.UITableViewDelegate, UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+}
+@objc(DAPIAccountMetadataResponse) public class DAPIAccountMetadataResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let accountsMetadata: DapiSDK.DAPIAccountMetadata
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIAccountMetadata) public class DAPIAccountMetadata : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let bankID: Swift.String
+  @objc final public let address: DapiSDK.DAPILineAddress?
+  @objc final public let bankName: Swift.String?, bankType: Swift.String?
+  @objc final public let beneficiaryCoolDownPeriod: DapiSDK.DAPIAccountRange?
+  @objc final public let branchAddress: Swift.String?, branchName: Swift.String?
+  @objc final public let country: DapiSDK.DAPIPair?
+  final public let isCreateBeneficiaryEndpointRequired: Swift.Bool?
+  @objc public var isCreateBenefEndpointRequired: Swift.Bool {
+    @objc get
+  }
+  final public let isCreateWireBeneficiaryEndpointRequired: Swift.Bool?
+  @objc public var isCreateWireBenefEndpointRequired: Swift.Bool {
+    @objc get
+  }
+  @objc final public let sortCode: Swift.String?
+  @objc final public let swiftCode: Swift.String?
+  @objc final public let transactionRange: DapiSDK.DAPIAccountRange?
+  @objc final public let transferBounds: [DapiSDK.DAPITransferBound]?
+  final public let willNewlyAddedBeneficiaryExistBeforeCoolDownPeriod: Swift.Bool?
+  @objc public var willNewlyAddedBenefExistBeforeCoolDownPeriod: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPILineAddress) public class DAPILineAddress : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var line1: Swift.String?, line2: Swift.String?, line3: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIAccountRange) public class DAPIAccountRange : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let unit: Swift.String
+  @objc public var rangeValue: Foundation.NSNumber {
+    @objc get
+  }
+  final public let value: Swift.Float
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIPair) public class DAPIPair : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var code: Swift.String?, name: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPITransferBound) public class DAPITransferBound : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var currency: DapiSDK.DAPIPair?
+  public var minimum: Swift.Float?
+  @objc public var minimumValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc public var type: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class DAPIConnectVC : UIKit.UIViewController {
+  @objc @_Concurrency.MainActor(unsafe) weak public var delegate: DapiSDK.DAPIConnectDelegate?
+  @objc @_Concurrency.MainActor(unsafe) public init(bankID: Swift.String? = nil)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+extension DapiSDK.DAPIConnectVC : WebKit.WKUIDelegate, WebKit.WKNavigationDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
+}
+extension DapiSDK.DAPIConnectVC : DapiSDK.MessageViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func messageViewControllerDidTapButton(_ messageViewController: DapiSDK.MessageViewController, error: Swift.Error?)
+}
+extension DapiSDK.DAPIConnectVC : UIKit.UIAdaptivePresentationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func presentationControllerDidDismiss(_ presentationController: UIKit.UIPresentationController)
+}
+extension DapiSDK.Dapi {
+  public func accountMetadata(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIAccountMetadataResponse, Swift.Error>) -> Swift.Void))
+  public func identity(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIIdentityResponse, Swift.Error>) -> Swift.Void))
+  public func bankAccounts(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIBankAccountsResponse, Swift.Error>) -> Swift.Void))
+  public func bankCards(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((Swift.Result<DapiSDK.DAPIBankCardsResponse, Swift.Error>) -> Swift.Void))
+  public func cardTransactions(bankConnection: DapiSDK.DAPIBankConnection, cardID id: Swift.String, type: DapiSDK.DAPITransactionType = .default, from startDate: Foundation.Date, to endDate: Foundation.Date, completion: @escaping ((Swift.Result<DapiSDK.DAPITransactionsResponse, Swift.Error>) -> Swift.Void))
+  public func accountTransactions(bankConnection: DapiSDK.DAPIBankConnection, bankAccountID id: Swift.String, type: DapiSDK.DAPITransactionType = .default, from startDate: Foundation.Date, to endDate: Foundation.Date, completion: @escaping ((Swift.Result<DapiSDK.DAPITransactionsResponse, Swift.Error>) -> Swift.Void))
+}
+@objc extension Foundation.NSString {
+  @objc dynamic public func onPrimaryColor() -> UIKit.UIColor?
+}
+public enum DAPICountry {
+  case ae
+  case sa
+  case eg
+  case us
+  case kw
+  case za
+  case jo
+  case pk
+  case ng
+  case mx
+  case qa
+  case ca
+  case countryCode(code: Swift.String)
+}
+@objc(DAPILanguage) public enum DAPILanguage : Swift.Int {
+  case ar
+  case en
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc(DAPITransferType) public enum DAPITransferType : Swift.Int {
+  case normal
+  case wire
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class DAPIAutoFlowVC : UIKit.UINavigationController {
+  @objc @_Concurrency.MainActor(unsafe) public var transferDidSucceed: ((DapiSDK.DAPITransferResult) -> Swift.Void)?
+  @objc @_Concurrency.MainActor(unsafe) public var transferDidFail: ((Swift.Error) -> Swift.Void)?
+  @objc @_Concurrency.MainActor(unsafe) weak public var autoFlowDelegate: DapiSDK.DAPIAutoFlowDelegate?
+  @objc @_Concurrency.MainActor(unsafe) public var successResultsScreenMessageManipulation: ((_ transferResult: DapiSDK.DAPITransferResult?) -> Swift.String)?
+  @objc @_Concurrency.MainActor(unsafe) public var errorResultsScreenMessageManipulation: ((_ error: Swift.Error) -> Swift.String)?
+  @objc @_Concurrency.MainActor(unsafe) public init(bankConnection: DapiSDK.DAPIBankConnection, account: DapiSDK.DAPIBankAccount? = nil, wireBeneficiary: DapiSDK.DAPIWireBeneficiary? = nil, beneficiary: DapiSDK.DAPIBeneficiary? = nil, transferType: DapiSDK.DAPITransferType = .normal, amount: Swift.Float = 0, remark: Swift.String? = nil)
+  @objc @_Concurrency.MainActor(unsafe) public init(bankConnectionForACHPullTransfer connection: DapiSDK.DAPIBankConnection, account: DapiSDK.DAPIBankAccount? = nil, amount: Swift.Float = 0, description: Swift.String)
+  @objc @_Concurrency.MainActor(unsafe) public init(bankConnectionForNymCard connection: DapiSDK.DAPIBankConnection, token: Swift.String, account: DapiSDK.DAPIBankAccount? = nil, amount: Swift.Float = 0)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+extension DapiSDK.DAPIAutoFlowVC : DapiSDK.DPCNumPadDisplayViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func numPadDisplayViewController(_ viewController: DapiSDK.DPCNumPadDisplayViewController, didSubmitValue value: Swift.Double)
+}
+extension DapiSDK.DAPIAutoFlowVC : DapiSDK.MessageViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func messageViewControllerDidTapButton(_ messageViewController: DapiSDK.MessageViewController, error: Swift.Error?)
+}
+extension DapiSDK.DAPIAutoFlowVC : UIKit.UIAdaptivePresentationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func presentationControllerDidDismiss(_ presentationController: UIKit.UIPresentationController)
+}
+extension Swift.Error {
+  public var dapiMetaData: DapiSDK.DAPIResponseResult? {
+    get
+  }
+  public var dapiErrorMessage: Swift.String {
+    get
+  }
+  public var dapiErrorType: Swift.String {
+    get
+  }
+  public var dapiOperationID: Swift.String {
+    get
+  }
+  public var dapiStatusCode: Swift.String {
+    get
+  }
+  public var coolDownPeriod: DapiSDK.DAPICoolDownPeriod? {
+    get
+  }
+}
+@objc extension Foundation.NSError {
+  @objc public static let knownErrorType: [Swift.String]
+  @objc dynamic public var dapiErrorMessage: Swift.String {
+    @objc get
+  }
+  @objc dynamic public var dapiErrorType: Swift.String {
+    @objc get
+  }
+  @objc dynamic public var dapiOperationID: Swift.String {
+    @objc get
+  }
+  @objc dynamic public var dapiStatusCode: Swift.String {
+    @objc get
+  }
+  @objc dynamic public var dictionaryRepresentation: [Swift.String : Any] {
+    @objc get
+  }
+}
+@objc(DAPIEnvironment) public enum DAPIEnvironment : Swift.Int {
+  case production
+  case sandbox
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc(DAPIConfigurations) public class DAPIConfigurations : ObjectiveC.NSObject {
+  public var countries: [DapiSDK.DAPICountry]
+  public var endPointExtraHeaderFields: [DapiSDK.DAPIEndpoint : [Swift.String : Swift.String]]
+  public var endPointExtraBody: [DapiSDK.DAPIEndpoint : [Swift.String : Any]]
+  @objc public var showLogos: Swift.Bool
+  @objc public var showTransferSuccessfulResult: Swift.Bool
+  @objc public var showTransferErrorResult: Swift.Bool
+  @objc public var language: DapiSDK.DAPILanguage
+  @objc public var enableNetworkingLogging: Swift.Bool
+  @objc public var requestInterceptionCompletion: ((_ connection: DapiSDK.DAPIBankConnection?, _ request: Foundation.URLRequest) -> Foundation.URLRequest)?
+  @objc public var responseInterceptionCompletion: ((_ connection: DapiSDK.DAPIBankConnection?, _ response: DapiSDK.DapiURLResponse) -> Foundation.Data?)?
+  public init(countries: [DapiSDK.DAPICountry])
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc(DAPIResponseResult) public class DAPIResponseResult : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var operationID: Swift.String?
+  @objc public var status: Swift.String?
+  @objc public var message: Swift.String?
+  public var statusCode: Swift.Int?
+  @objc public var statusCodeValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc public var type: Swift.String?
+  @objc public var coolDownPeriod: DapiSDK.DAPICoolDownPeriod?
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPICoolDownPeriod) public class DAPICoolDownPeriod : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var unit: Swift.String?
+  public var value: Swift.Float?
+  @objc public var coolDownPeriodValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPITransactionsResponse) public class DAPITransactionsResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let transactions: [DapiSDK.DAPITransaction]
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPITransaction) public class DAPITransaction : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let type: Swift.String?
+  @objc final public let amount: Swift.Float
+  final public let beforeAmount: Swift.Float?
+  @objc public var beforeAmountValue: Foundation.NSNumber? {
+    @objc get
+  }
+  final public let afterAmount: Swift.Float?
+  @objc public var afterAmountValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc final public let transactionDescription: Swift.String?
+  @objc final public let details: Swift.String?
+  @objc final public let currency: DapiSDK.DAPIPair?
+  @objc final public let reference: Swift.String?
+  @objc final public let brandDetails: DapiSDK.DAPIBankTransactionBrand?
+  @objc final public let category: Swift.String?
+  @objc final public let date: Swift.String?
+  @objc public var transactionDate: Foundation.Date? {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIBankTransactionBrand) public class DAPIBankTransactionBrand : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var logo: Swift.String?
+  @objc public var name: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIBeneficiary) public class DAPIBeneficiary : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var accountNumber: Swift.String?
+  @objc public var name: Swift.String?
+  @objc public var bankName: Swift.String?
+  @objc public var swiftCode: Swift.String?
+  @objc public var iban: Swift.String?
+  @objc public var phoneNumber: Swift.String?
+  @objc public var country: Swift.String?
+  @objc public var branchAddress: Swift.String?
+  @objc public var branchName: Swift.String?
+  @objc public var nickname: Swift.String?
+  @objc public var linesAddress: DapiSDK.DAPILineAddress?
+  @objc public var dictionaryRepresentation: [Swift.String : Any] {
+    @objc get
+  }
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc(Dapi) public class Dapi : ObjectiveC.NSObject {
+  @objc public static var shared: DapiSDK.Dapi {
+    get
+  }
+  @objc public var uiCustomization: DapiSDK.DAPIUICustomization
+  @objc public var configurations: DapiSDK.DAPIConfigurations
+  @objc public var clientUserID: Swift.String! {
+    @objc get
+    @objc set
+  }
+  @objc public var environment: DapiSDK.DAPIEnvironment {
+    get
+  }
+  @objc public func start(appKey: Swift.String, environment: DapiSDK.DAPIEnvironment, clientUserID: Swift.String, completion: ((DapiSDK.Dapi?, Swift.Error?) -> Swift.Void)? = nil)
+  @objc public var bankConnections: [DapiSDK.DAPIBankConnection] {
+    @objc get
+  }
+  public func createBankConnection(parameters: [Swift.String : Any], completion: @escaping ((Swift.Result<DapiSDK.DAPIBankConnection, Swift.Error>) -> Swift.Void))
+  public func delink(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping (_ result: Swift.Result<DapiSDK.DAPIResponseResult, Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+@objc extension DapiSDK.Dapi {
+  @objc dynamic public func createBankConnection(parameters: [Swift.String : Any], completion: @escaping ((_ result: DapiSDK.DAPIBankConnection?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func delink(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIResponseResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func accountMetadata(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIAccountMetadataResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func identity(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIIdentityResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func bankAccounts(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIBankAccountsResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func bankCards(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIBankCardsResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func cardTransactions(bankConnection: DapiSDK.DAPIBankConnection, cardID: Swift.String, type: DapiSDK.DAPITransactionType = .default, from startDate: Foundation.Date, to endDate: Foundation.Date, completion: @escaping ((_ result: DapiSDK.DAPITransactionsResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func accountTransactions(bankConnection: DapiSDK.DAPIBankConnection, bankAccountID: Swift.String, type: DapiSDK.DAPITransactionType = .default, from startDate: Foundation.Date, to endDate: Foundation.Date, completion: @escaping ((_ result: DapiSDK.DAPITransactionsResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func bankBeneficiaries(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIBankBeneficiariesResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func bankWireBeneficiaries(bankConnection: DapiSDK.DAPIBankConnection, completion: @escaping ((_ result: DapiSDK.DAPIBankWireBeneficiariesResponse?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, beneficiaryDetails beneficiary: DapiSDK.DAPIBeneficiary, completion: @escaping ((_ result: DapiSDK.DAPIResponseResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createWireBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, beneficiaryDetails beneficiary: DapiSDK.DAPIWireBeneficiary, completion: @escaping ((_ result: DapiSDK.DAPIResponseResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createTransferToExistBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID accountID: Swift.String, receiverBeneficiaryID beneficiaryID: Swift.String, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createWireTransferToExistBeneficiary(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID accountID: Swift.String, receiverBeneficiaryID beneficiaryID: Swift.String, amount: Swift.Float, remark: Swift.String? = nil, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createWireTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID: Swift.String, receiverBeneficiary beneficiary: DapiSDK.DAPIWireBeneficiary, amount: Swift.Float = 0, remark: Swift.String? = nil, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID: Swift.String, receiverBeneficiary beneficiary: DapiSDK.DAPIBeneficiary?, amount: Swift.Float = 0, remark: Swift.String? = nil, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func createACHPullTransfer(bankConnection: DapiSDK.DAPIBankConnection, senderBankAccountID: Swift.String, amount: Swift.Float = 0, description: Swift.String, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+  @objc dynamic public func nymcardLoadFunds(bankConnection: DapiSDK.DAPIBankConnection, token: Swift.String, senderBankAccountID: Swift.String, amount: Swift.Float, completion: @escaping ((_ result: DapiSDK.DAPITransferResult?, _ error: Swift.Error?) -> Swift.Void))
+}
+extension UIKit.UIImage {
+  @objc dynamic public class func gif(dapiResourcename: Swift.String) -> UIKit.UIImage?
+}
+@objc(DapiMFAColorScheme) public class DapiMFAColorScheme : ObjectiveC.NSObject {
+  @objc public var primaryColor: UIKit.UIColor {
+    @objc get
+  }
+  @objc public var secondaryColor: UIKit.UIColor {
+    @objc get
+  }
+  public init(hexPrimaryColor: Swift.String?, hexSecondaryColor: Swift.String?)
+  @objc deinit
+}
+@objc(DAPIBankAccountsResponse) public class DAPIBankAccountsResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let accounts: [DapiSDK.DAPIBankAccount]
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankAccount) public class DAPIBankAccount : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var id: Swift.String
+  @objc public var accountID: Swift.String {
+    @objc get
+  }
+  @objc public var number: Swift.String?
+  @objc public var iban: Swift.String?
+  @objc public var type: Swift.String?
+  @objc public var name: Swift.String?
+  @objc public var currency: DapiSDK.DAPIPair?
+  @objc public var balance: DapiSDK.DAPIBalance
+  @objc public var dictionaryRepresentation: [Swift.String : Any] {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBalance) public class DAPIBalance : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var currency: DapiSDK.DAPIPair?
+  @objc public var amount: Swift.Float
+  @objc public var accountNumber: Swift.String?
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIIdentityResponse) public class DAPIIdentityResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let identity: DapiSDK.DAPIIdentity
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIIdentity) public class DAPIIdentity : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var name: Swift.String?
+  @objc public var nationality: Swift.String?
+  @objc public var dateOfBirth: Swift.String?
+  @objc public var emailAddress: Swift.String?
+  @objc public var address: DapiSDK.DAPIAddress?
+  @objc public var numbers: [DapiSDK.DAPINumber]?
+  @objc public var identifications: [DapiSDK.DAPIIdentification]?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIAddress) public class DAPIAddress : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var flat: Swift.String?
+  @objc public var building: Swift.String?
+  @objc public var full: Swift.String?
+  @objc public var area: Swift.String?
+  @objc public var poBox: Swift.String?
+  @objc public var city: Swift.String?
+  @objc public var state: Swift.String?
+  @objc public var country: Swift.String?
+  @objc public var zipCode: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPINumber) public class DAPINumber : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var type: Swift.String?
+  @objc public var value: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIIdentification) public class DAPIIdentification : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var type: Swift.String?
+  @objc public var value: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+extension UIKit.UIApplication {
+  @objc @_Concurrency.MainActor(unsafe) public static var dapiTopMostController: UIKit.UIViewController? {
+    @objc get
+  }
+}
+@_hasMissingDesignatedInitializers @objc(DAPIBankConnection) public class DAPIBankConnection : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var userSecret: Swift.String
+  @objc public var connectionID: Swift.String
+  @objc public var userID: Swift.String
+  @objc public var tokenID: Swift.String
+  @objc public var clientUserID: Swift.String
+  @objc public var bankInfo: DapiSDK.DAPIBankInfo
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  @objc public func getParameters() -> [Swift.String : Any]
+  @objc public var dictionaryRepresentation: [Swift.String : Any] {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_hasMissingDesignatedInitializers @objc(DAPIBankInfo) public class DAPIBankInfo : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var bankId: Swift.String
+  @objc public var bankFullName: Swift.String
+  @objc public var bankShortName: Swift.String?
+  @objc public var bankFullLogoPng: Swift.String?
+  @objc public var bankHalfLogoPng: Swift.String?
+  @objc public var bankMiniLogoPng: Swift.String?
+  @objc public var primaryColor: Swift.String?
+  @objc public var secondaryColor: Swift.String?
+  @objc public var swiftCode: Swift.String?
+  @objc public var countryName: Swift.String?
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankCardsResponse) public class DAPIBankCardsResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let cards: [DapiSDK.DAPIBankCard]
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankCard) public class DAPIBankCard : ObjectiveC.NSObject, Swift.Codable {
+  public var id: Swift.String
+  @objc public var cardID: Swift.String {
+    @objc get
+  }
+  @objc public var cardNumber: Swift.String?
+  public var creditLimit: Swift.Float?
+  @objc public var creditLimitValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc public var cardStatus: DapiSDK.DAPICardStatus {
+    @objc get
+  }
+  @objc public var name: Swift.String?
+  @objc public var type: Swift.String?
+  @objc public var currency: DapiSDK.DAPIPair?
+  @objc public var balance: DapiSDK.DAPICardBalance?
+  @objc public var expiryDate: Swift.String?
+  @objc public var cardExpiryDate: Foundation.Date? {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPICardStatus) public enum DAPICardStatus : Swift.Int {
+  case active = 0
+  case disabled = 1
+  case blocked = 2
+  case unknown = 3
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc(DAPICardBalance) public class DAPICardBalance : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var currency: DapiSDK.DAPIPair?
+  @objc public var cardNumber: Swift.String?
+  @objc public var dueDate: Swift.String?
+  public var outstandingBalance: Swift.Float?
+  @objc public var outstandingBalanceValue: Foundation.NSNumber? {
+    @objc get
+  }
+  public var availableBalance: Swift.Float?
+  @objc public var availableBalanceValue: Foundation.NSNumber? {
+    @objc get
+  }
+  public var amountDue: Swift.Float?
+  @objc public var amountDueValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc public var paymentDueDate: Foundation.Date? {
+    @objc get
+  }
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc @_Concurrency.MainActor(unsafe) public class UIDapiView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc @_Concurrency.MainActor(unsafe) public class UIDapiLabel : UIKit.UILabel {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public enum DAPIEndpoint : Swift.String, Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+  case exchangeToken
+  case accountMetadata
+  case identity
+  case accounts
+  case transactions
+  case categorizedTransactions
+  case enrichedTransactions
+  case getCards
+  case beneficiaries
+  case wireBeneficiaries
+  case createBeneficiary
+  case createWireBeneficiaries
+  case createWireTransferToExistingBeneficiary
+  case createTransferToExistingBeneficiary
+  case createWireTransfer
+  case createTransfer
+  case delinkUser
+  case createACHPullTransfer
+  case nymCardLoadFunds
+  case all
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@objc(DAPIBankBeneficiariesResponse) public class DAPIBankBeneficiariesResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var beneficiaries: [DapiSDK.DAPIBankBeneficiary]
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankBeneficiary) public class DAPIBankBeneficiary : ObjectiveC.NSObject, Swift.Codable {
+  public var id: Swift.String
+  @objc public var beneficiaryID: Swift.String {
+    @objc get
+  }
+  @objc public var accountNumber: Swift.String?
+  @objc public var name: Swift.String?
+  @objc public var iban: Swift.String?
+  @objc public var type: Swift.String?
+  @objc public var status: Swift.String?
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_hasMissingDesignatedInitializers @objc(MFAParameter) public class MFAParameter : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var identifier: Swift.String?
+  @objc public var query: Swift.String?
+  @objc public var queryType: Swift.String?
+  @objc public var answer: Swift.String?
+  @objc public var queryChoices: [DapiSDK.MFAQueryChoice]?
+  @objc public var hint: Swift.String? {
+    @objc get
+  }
+  @objc public var index: Foundation.NSNumber {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc public class MFAQueryChoice : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var content: Swift.String?
+  @objc public var type: Swift.String?
+  @objc public var index: Foundation.NSNumber {
+    @objc get
+  }
+  public init(with dictionary: [Swift.String : Any])
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIWireBeneficiary) public class DAPIWireBeneficiary : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var name: Swift.String?
+  @objc public var firstName: Swift.String?
+  @objc public var lastName: Swift.String?
+  @objc public var nickname: Swift.String?
+  @objc public var accountNumber: Swift.String?
+  @objc public var routingNumber: Swift.String?
+  @objc public var receiverAccountType: Swift.String?
+  @objc public var receiverType: Swift.String?
+  @objc public var zipCode: Swift.String?
+  @objc public var country: Swift.String?
+  @objc public var state: Swift.String?
+  @objc public var city: Swift.String?
+  @objc public var bankName: Swift.String?
+  @objc public var linesAddress: DapiSDK.DAPILineAddress?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+extension UIKit.UIButton {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func sendAction(_ action: ObjectiveC.Selector, to target: Any?, for event: UIKit.UIEvent?)
+}
+@_inheritsConvenienceInitializers @objc(DAPIUICustomization) public class DAPIUICustomization : ObjectiveC.NSObject {
+  @objc public var theme: DapiSDK.DAPITheme
+  @objc public var primaryColor: DapiSDK.DAPIColor
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc(DAPIColor) public class DAPIColor : ObjectiveC.NSObject {
+  @objc public var lightModeHexaCode: Swift.String?
+  @objc public var darkModeHexaCode: Swift.String?
+  @objc public var lightModeColor: UIKit.UIColor {
+    @objc get
+  }
+  @objc public var darkModeColor: UIKit.UIColor {
+    @objc get
+  }
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc(DAPITheme) public enum DAPITheme : Swift.Int {
+  case dark
+  case dynamic
+  case light
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension UIKit.UIUserInterfaceStyle {
+  public static var dapiUserInterfaceStyle: UIKit.UIUserInterfaceStyle {
+    get
+  }
+}
+@objc public protocol DAPIConnectDelegate {
+  @objc func dapiConnect(_ dapiConnect: DapiSDK.DAPIConnectVC, didSuccessfullyConnectTo bankID: Swift.String?, bankConnection: DapiSDK.DAPIBankConnection)
+  @objc func dapiConnect(_ dapiConnect: DapiSDK.DAPIConnectVC, didFailConnectingWith error: Swift.String)
+  @objc func dapiConnectUserDidCancel(_ dapiConnect: DapiSDK.DAPIConnectVC)
+}
+@objc(DAPITransferResult) public class DAPITransferResult : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let operationID: Swift.String?
+  @objc final public let message: Swift.String?
+  @objc final public let referenceNumber: Swift.String?
+  public var amount: Swift.Float?
+  @objc public var amountValue: Foundation.NSNumber? {
+    @objc get
+  }
+  final public let statusCode: Swift.Int?
+  @objc public var statusCodeValue: Foundation.NSNumber? {
+    @objc get
+  }
+  @objc final public let remark: Swift.String?
+  @objc public var senderAccountID: Swift.String?
+  @objc public var dictionaryRepresentation: [Swift.String : Any] {
+    @objc get
+  }
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankWireBeneficiariesResponse) public class DAPIBankWireBeneficiariesResponse : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var beneficiaries: [DapiSDK.DAPIBankWireBeneficiary]
+  @objc final public let operationID: Swift.String, status: Swift.String
+  @objc final public let success: Swift.Bool
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@objc(DAPIBankWireBeneficiary) public class DAPIBankWireBeneficiary : ObjectiveC.NSObject, Swift.Codable {
+  public var id: Swift.String
+  @objc public var beneficiaryID: Swift.String {
+    @objc get
+  }
+  @objc public var accountNumber: Swift.String?
+  @objc public var name: Swift.String?
+  @objc public var address: DapiSDK.DAPIWireAddress?
+  @objc public var bankName: Swift.String?
+  @objc public var routingNumber: Swift.String?
+  @objc public var type: Swift.String?
+  @objc public var status: Swift.String?
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @objc(DAPIWireAddress) public class DAPIWireAddress : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var building: Swift.String?
+  @objc public var area: Swift.String?
+  @objc public var city: Swift.String?
+  @objc public var country: Swift.String?
+  @objc public var flat: Swift.String?
+  @objc public var full: Swift.String?
+  @objc public var poBox: Swift.String?
+  @objc public var state: Swift.String?
+  @objc public var zipCode: Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_hasMissingDesignatedInitializers @objc(DapiURLResponse) public class DapiURLResponse : ObjectiveC.NSObject {
+  @objc public var response: Foundation.HTTPURLResponse
+  @objc public var data: Foundation.Data?
+  @objc deinit
+}
+@objc(DAPIAutoFlowDelegate) public protocol DAPIAutoFlowDelegate {
+  @objc func autoFlow(_ autoFlow: DapiSDK.DAPIAutoFlowVC, willTransferAmount amount: Swift.Float, fromAccount senderAccount: DapiSDK.DAPIBankAccount)
+  @objc optional func autoFlow(_ autoFlow: DapiSDK.DAPIAutoFlowVC, transferDidFailFrom senderAccount: DapiSDK.DAPIBankAccount?, to beneficiary: DapiSDK.DAPIBeneficiary?, with error: Swift.Error)
+  @objc optional func autoFlow(_ autoFlow: DapiSDK.DAPIAutoFlowVC, transferDidFailFrom senderAccount: DapiSDK.DAPIBankAccount?, toWireBeneficiary beneficiary: DapiSDK.DAPIWireBeneficiary?, with error: Swift.Error)
+  @objc optional func autoFlow(_ autoFlow: DapiSDK.DAPIAutoFlowVC, achPullTransferDidFailFrom senderAccount: DapiSDK.DAPIBankAccount?, with error: Swift.Error)
+  @objc func autoFlow(_ autoFlow: DapiSDK.DAPIAutoFlowVC, transferDidSuccessFrom senderAccount: DapiSDK.DAPIBankAccount, transferResult: DapiSDK.DAPITransferResult)
+  @objc func autoFlowUserDidCanceled(_ autoFlow: DapiSDK.DAPIAutoFlowVC)
+}
+extension DapiSDK.DAPITransactionType : Swift.Equatable {}
+extension DapiSDK.DAPITransactionType : Swift.Hashable {}
+extension DapiSDK.DAPITransactionType : Swift.RawRepresentable {}
+extension DapiSDK.DAPILanguage : Swift.Equatable {}
+extension DapiSDK.DAPILanguage : Swift.Hashable {}
+extension DapiSDK.DAPILanguage : Swift.RawRepresentable {}
+extension DapiSDK.DAPITransferType : Swift.Equatable {}
+extension DapiSDK.DAPITransferType : Swift.Hashable {}
+extension DapiSDK.DAPITransferType : Swift.RawRepresentable {}
+extension DapiSDK.DAPIEnvironment : Swift.Equatable {}
+extension DapiSDK.DAPIEnvironment : Swift.Hashable {}
+extension DapiSDK.DAPIEnvironment : Swift.RawRepresentable {}
+extension DapiSDK.DAPICardStatus : Swift.Equatable {}
+extension DapiSDK.DAPICardStatus : Swift.Hashable {}
+extension DapiSDK.DAPICardStatus : Swift.RawRepresentable {}
+extension DapiSDK.DAPIEndpoint : Swift.Equatable {}
+extension DapiSDK.DAPIEndpoint : Swift.Hashable {}
+extension DapiSDK.DAPIEndpoint : Swift.RawRepresentable {}
+extension DapiSDK.DAPITheme : Swift.Equatable {}
+extension DapiSDK.DAPITheme : Swift.Hashable {}
+extension DapiSDK.DAPITheme : Swift.RawRepresentable {}

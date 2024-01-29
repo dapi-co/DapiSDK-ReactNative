@@ -1,0 +1,11 @@
+framework module DapiSDK {
+  umbrella header "DapiSDK.h"
+
+  export *
+  module * { export * }
+}
+
+module DapiSDK.Swift {
+  header "DapiSDK-Swift.h"
+  requires objc
+}

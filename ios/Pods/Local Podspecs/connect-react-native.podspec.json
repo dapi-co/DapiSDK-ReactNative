@@ -1,0 +1,24 @@
+{
+  "name": "connect-react-native",
+  "version": "2.47.2",
+  "summary": "Financial APIs to connect users' bank accounts",
+  "license": "MIT",
+  "authors": "Dapi",
+  "homepage": "https://github.com/dapi-co/connect-react-native",
+  "platforms": {
+    "ios": "7.0"
+  },
+  "source": {
+    "git": "https://github.com/react-native-community/dapiconnect-reactnative.git",
+    "tag": "v2.47.2"
+  },
+  "source_files": "ios/*.{h,m}",
+  "dependencies": {
+    "React": [
+
+    ],
+    "DapiBanking": [
+      "2.14.0"
+    ]
+  }
+}
